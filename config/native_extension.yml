@@ -1,0 +1,4 @@
+# RuboCop rationale: mkmf configures native builds through globals in extconf.rb.
+Style/GlobalVars:
+  Exclude:
+    - '**/ext/**/extconf.rb'

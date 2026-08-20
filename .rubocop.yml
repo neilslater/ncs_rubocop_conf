@@ -1,0 +1,7 @@
+inherit_from:
+  - config/base.yml
+  - config/rake.yml
+  - config/rspec.yml
+
+AllCops:
+  TargetRubyVersion: 3.3

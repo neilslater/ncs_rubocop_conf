@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'optparse'
+require 'ncs_rubocop_conf'
+
+options = { root: Dir.pwd }
+OptionParser.new do |parser|
+  parser.banner = 'Usage: ncs-rubocop-conf-audit [--root PATH]'
+  parser.on('--root PATH', 'Repository root to audit') { |path| options[:root] = path }
+end.parse!
+
+audit = NcsRuboCopConf::ExceptionAudit.new(root: options.fetch(:root))
+audit.report
+exit(audit.success? ? 0 : 1)
