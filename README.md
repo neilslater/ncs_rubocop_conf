@@ -4,7 +4,7 @@
 repositories. It is developed and tagged on GitHub, but is not published to
 RubyGems.
 
-Version 0.1.x supports Ruby 3.2 and later and constrains RuboCop/plugin updates
+Version 0.1.x supports Ruby 3.3 and later and constrains RuboCop/plugin updates
 to the reviewed 1.88.x, rubocop-rake 0.7.x, and rubocop-rspec 3.10.x lines.
 Changing any of those lines is a policy upgrade that must be reviewed against
 the effective configuration and profile fixtures before release.

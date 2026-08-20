@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.description = 'Shared base and framework RuboCop profiles with exception-policy auditing.'
   spec.homepage = 'https://github.com/neilslater/ncs_rubocop_conf'
   spec.license = 'MIT'
-  spec.required_ruby_version = '>= 3.2'
+  spec.required_ruby_version = '>= 3.3'
 
   spec.files = Dir['CHANGELOG.md', 'LICENSE', 'README.md', 'config/**/*.yml', 'exe/*', 'lib/**/*.rb']
   spec.bindir = 'exe'

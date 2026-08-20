@@ -14,5 +14,6 @@ Initial Convolver pilot release.
   inline disables, and local exceptions without adjacent rationale comments.
 - Constrain the policy to RuboCop 1.88.x, rubocop-rake 0.7.x, and
   rubocop-rspec 3.10.x. The pilot resolves to 1.88.2, 0.7.1, and 3.10.2.
+- Require Ruby 3.3 or later.
 - Migration: replace copied plugin and metric configuration with `inherit_gem`,
   opt into only relevant profiles, and run the exception audit beside RuboCop.
