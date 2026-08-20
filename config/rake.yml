@@ -1,0 +1,8 @@
+plugins: rubocop-rake
+
+Metrics/BlockLength:
+  inherit_mode:
+    merge:
+      - AllowedMethods
+  AllowedMethods:
+    - namespace

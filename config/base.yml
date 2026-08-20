@@ -1,0 +1,25 @@
+AllCops:
+  NewCops: enable
+
+Metrics/BlockLength:
+  CountAsOne:
+    - array
+    - hash
+
+Metrics/ClassLength:
+  CountAsOne:
+    - array
+    - hash
+
+Metrics/MethodLength:
+  CountAsOne:
+    - array
+    - hash
+
+Metrics/ModuleLength:
+  CountAsOne:
+    - array
+    - hash
+
+Metrics/ParameterLists:
+  CountKeywordArgs: false
