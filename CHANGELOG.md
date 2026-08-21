@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.2.0 - 2026-08-21
+
+Controlled upgrade and cross-project rollout baseline.
+
+- Set `AllCops/TargetRubyVersion: 3.3` in the shared base profile so every
+  consumer receives the accepted global Ruby minimum.
+- Upgrade the reviewed RuboCop line from 1.88.x to 1.89.x. The release resolves
+  to RuboCop 1.89.0 while retaining rubocop-rake 0.7.1 and rubocop-rspec 3.10.2.
+- Review RuboCop 1.89's effective configuration changes. `NewCops: enable`
+  accepts the new pending `Lint/DeprecatedReference` and `Lint/NameTypo` cops;
+  both remain inactive without the upstream opt-in project index and optional
+  `rubydex` dependency. The disabled `Lint/UnusedPrivateMethod` cop remains
+  disabled.
+- Validate the package fixtures and complete Convolver gate with no offenses,
+  exceptions, behavior changes, or coverage changes before release.
+
 ## 0.1.0 - 2026-08-20
 
 Initial Convolver pilot release.

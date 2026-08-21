@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
   spec.metadata['rubygems_mfa_required'] = 'true'
   spec.metadata['source_code_uri'] = spec.homepage
 
-  spec.add_dependency 'rubocop', '~> 1.88.0', '>= 1.88.2'
+  spec.add_dependency 'rubocop', '~> 1.89.0', '>= 1.89.0'
   spec.add_dependency 'rubocop-rake', '~> 0.7.0', '>= 0.7.1'
   spec.add_dependency 'rubocop-rspec', '~> 3.10.0', '>= 3.10.2'
 end
