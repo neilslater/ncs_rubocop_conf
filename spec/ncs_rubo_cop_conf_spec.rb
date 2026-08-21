@@ -3,6 +3,12 @@
 require 'spec_helper'
 
 RSpec.describe NcsRuboCopConf do
+  it 'targets Ruby 3.3' do
+    with_rubocop_project(%w[base], {}) do |root|
+      expect(rubocop_config(root).for_all_cops.fetch('TargetRubyVersion')).to eq 3.3
+    end
+  end
+
   it 'folds array and hash literals and ignores keyword parameters' do
     with_rubocop_project(%w[base], 'sample.rb' => folded_method_source) do |root|
       offenses = rubocop_offenses(root, %w[sample.rb], only: %w[Metrics/MethodLength Metrics/ParameterLists])

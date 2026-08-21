@@ -6,6 +6,7 @@ require 'open3'
 require 'tmpdir'
 require 'yaml'
 require 'ncs_rubocop_conf'
+require 'rubocop'
 
 module FixtureHelpers
   ROOT = Pathname(__dir__).join('..').expand_path
@@ -32,6 +33,10 @@ module FixtureHelpers
 
   def rubocop_cop_names(root, files, only:)
     rubocop_offenses(root, files, only:).map { |offense| offense.fetch('cop_name') }
+  end
+
+  def rubocop_config(root)
+    RuboCop::ConfigLoader.configuration_from_file(root.join('.rubocop.yml').to_s)
   end
 
   private

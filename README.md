@@ -11,9 +11,9 @@ the effective configuration and profile fixtures before release.
 
 ## Profiles
 
-- `config/base.yml` enables new cops, folds multiline array and hash literals
-  in core length metrics, and excludes keyword arguments from parameter-list
-  counts.
+- `config/base.yml` targets Ruby 3.3, enables new cops, folds multiline array
+  and hash literals in core length metrics, and excludes keyword arguments from
+  parameter-list counts.
 - `config/rake.yml` loads `rubocop-rake` and treats Rake `namespace` blocks as
   structural DSL containers.
 - `config/rspec.yml` loads `rubocop-rspec` and applies the shared literal
