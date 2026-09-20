@@ -27,7 +27,7 @@ Consumers should pin an immutable Git tag:
 ```ruby
 gem 'ncs_rubocop_conf',
     github: 'neilslater/ncs_rubocop_conf',
-    tag: 'v0.2.0',
+    tag: 'v0.2.1',
     require: false
 ```
 
@@ -43,10 +43,42 @@ inherit_gem:
 ```
 
 Run `bundle exec ncs-rubocop-conf-audit` alongside RuboCop. The audit rejects a
-`.rubocop_todo.yml`, inline `rubocop:todo` directives, nonspecific or
-non-standalone disable directives, and exceptions without an immediately
-preceding `# RuboCop rationale:` comment. Human review is still required before
+`.rubocop_todo.yml`, active `rubocop:todo` directives, nonspecific or
+non-standalone suppressions, and exceptions without an immediately preceding,
+nonempty `# RuboCop rationale:` comment. Human review is still required before
 adding or retaining any repository-specific exception.
+
+For source directives, the audit recognizes the reviewed RuboCop grammar,
+including whitespace around `:` and the mode. A `disable` must name specific
+cops (comma-separated for multiple cops). Every negative `push` operand must
+also name a specific cop; negative departments and `-all` are rejected. Both
+forms must be on their own line with an immediately preceding rationale:
+
+```ruby
+# RuboCop rationale: the external DSL requires this global variable.
+# rubocop : disable Style/GlobalVars -- optional annotation
+$example = 1
+# rubocop:enable Style/GlobalVars
+
+# RuboCop rationale: the external DSL requires this global variable.
+# rubocop:push +Layout/LineLength -Style/GlobalVars
+$example = 2
+# rubocop:pop
+```
+
+A trailing `-- annotation` is accepted but does not replace the preceding
+rationale. Bare or positive-only pushes and `pop`/`enable` restoration do not
+introduce new exceptions. Restoring a prior suppression does not excuse its
+original directive from the policy.
+
+Strings, heredocs, and RuboCop's escaped `# # rubocop:...` examples are ignored.
+Ruby block comments are recognized as whole comment tokens; suppressing
+directives embedded in them do not qualify as standalone directives. Recognized
+`todo` forms are always rejected. Malformed `disable` and `push` forms are
+rejected even when RuboCop applies a parsed prefix. Unknown modes and
+restoration syntax are left to RuboCop's own validation. Specific cop names may
+contain multiple namespace components; the audit checks their form, while
+RuboCop checks which cops are available.
 
 ## Development
 

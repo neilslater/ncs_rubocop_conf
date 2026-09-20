@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.2.1 - Unreleased
+
+- Audit spaced `disable`/`todo` directives and negative `push` operands using
+  an isolated adapter to the reviewed RuboCop grammar. Negative pushes now
+  require specific cops, standalone placement, and an adjacent nonempty
+  rationale, just like disables; positive pushes and restoration remain valid.
+- Accept trailing `--` annotations without treating them as cop names or
+  rationales. Ignore escaped example comments, strings, and heredocs; check
+  directives embedded in Ruby block comments. Reject malformed suppressions
+  even when RuboCop applies their parsed prefix.
+- Recognize multi-component cop names and reuse one source snapshot per file
+  audit. Add actual RuboCop suppression fixtures for grammar and nested
+  push/pop restoration as an upgrade contract for the private parser API.
+- Migration: once `v0.2.1` is released, update each consumer's immutable tag
+  pin and lockfile, then run its complete gate. Resolve newly reported
+  suppressions through removal or approved, documented specific-cop exceptions.
+
 ## 0.2.0 - 2026-08-21
 
 Controlled upgrade and cross-project rollout baseline.

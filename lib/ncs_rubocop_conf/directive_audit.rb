@@ -1,61 +1,58 @@
 # frozen_string_literal: true
 
-require 'ripper'
+require_relative 'directive_comment'
 
 module NcsRuboCopConf
   # Checks inline RuboCop control comments in one Ruby source file.
   class DirectiveAudit
     RATIONALE = /^\s*# RuboCop rationale: \S/
-    DIRECTIVE = /#\s*rubocop:(disable|todo)\b(?:\s+([^\n]+))?/
-    COP_NAME = %r{\A[A-Z][A-Za-z0-9_]*/[A-Z][A-Za-z0-9_]*\z}
+    COP_NAME = %r{\A[A-Z][A-Za-z0-9_]*(?:/[A-Z][A-Za-z0-9_]*)+\z}
 
     def initialize(path)
       @path = path
     end
 
     def offenses
-      comments.filter_map { |position, token| offense_for(position, token) }
+      source = path.read
+      lines = source.lines
+      DirectiveComment.parse(source).filter_map { |directive| offense_for(directive, lines) }
     end
 
     private
 
     attr_reader :path
 
-    def comments
-      Ripper.lex(path.read).filter_map do |(position, event, token, _state)|
-        [position, token] if event == :on_comment && token.match?(DIRECTIVE)
-      end
-    end
-
-    def offense_for(position, token)
-      line_number, column = position
-      action, cop_list = token.match(DIRECTIVE).captures
-      message = directive_error(action, cop_list, line_number, column)
+    def offense_for(directive, lines)
+      message = directive_error(directive, lines)
       return unless message
 
-      PolicyOffense.new(path:, line: line_number, message:)
+      PolicyOffense.new(path:, line: directive.line, message:)
     end
 
-    def directive_error(action, cop_list, line_number, column)
-      return 'rubocop:todo directives are not permitted' if action == 'todo'
-      return 'rubocop:disable must appear on its own line' unless standalone?(line_number, column)
-      return 'rubocop:disable must name only specific cops' unless specific_cops?(cop_list)
-      return if rationale?(line_number)
+    def directive_error(directive, lines)
+      return 'rubocop:todo directives are not permitted' if directive.mode == 'todo'
+      return suppression_error(directive, lines) if directive.suppression?
+      return unless directive.mode == 'push' && directive.malformed?
 
-      'rubocop:disable needs an immediately preceding rationale'
+      'rubocop:push directive is malformed'
     end
 
-    def standalone?(line_number, column)
-      path.readlines.fetch(line_number - 1)[0...column].strip.empty?
+    def suppression_error(directive, lines)
+      prefix = "rubocop:#{directive.mode}"
+      return "#{prefix} must appear on its own line" unless directive.standalone?(lines)
+      return "#{prefix} must name only specific cops" unless specific_cops?(directive.suppressed_names)
+      return "#{prefix} directive is malformed" if directive.malformed?
+      return if rationale?(directive.line, lines)
+
+      "#{prefix} needs an immediately preceding rationale"
     end
 
-    def specific_cops?(cop_list)
-      names = cop_list.to_s.split(',').map(&:strip)
+    def specific_cops?(names)
       names.any? && names.all? { |name| name.match?(COP_NAME) }
     end
 
-    def rationale?(line_number)
-      line_number > 1 && path.readlines.fetch(line_number - 2).match?(RATIONALE)
+    def rationale?(line_number, lines)
+      line_number > 1 && lines.fetch(line_number - 2).match?(RATIONALE)
     end
   end
 end
