@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.1 - Unreleased
+## 0.2.1 - 2026-09-20
 
 - Audit spaced `disable`/`todo` directives and negative `push` operands using
   an isolated adapter to the reviewed RuboCop grammar. Negative pushes now
@@ -13,8 +13,8 @@
 - Recognize multi-component cop names and reuse one source snapshot per file
   audit. Add actual RuboCop suppression fixtures for grammar and nested
   push/pop restoration as an upgrade contract for the private parser API.
-- Migration: once `v0.2.1` is released, update each consumer's immutable tag
-  pin and lockfile, then run its complete gate. Resolve newly reported
+- Migration: update each consumer's immutable tag pin to `v0.2.1` and its
+  lockfile, then run its complete gate. Resolve newly reported
   suppressions through removal or approved, documented specific-cop exceptions.
 
 ## 0.2.0 - 2026-08-21
