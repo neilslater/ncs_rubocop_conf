@@ -18,4 +18,19 @@ task :audit do
   abort 'RuboCop exception audit failed' unless audit.success?
 end
 
-task default: %i[spec rubocop audit]
+desc 'Check locked dependencies against the updated advisory database'
+task :dependency_audit do
+  ruby Gem.bin_path('bundler-audit', 'bundler-audit'), 'check', '--update'
+end
+
+desc 'Check documentation for every public Ruby API object'
+task :documentation do
+  ruby 'tasks/documentation.rb'
+end
+
+desc 'Build and validate the installed package in a disposable consumer'
+task :package_check do
+  ruby 'tasks/package_check.rb'
+end
+
+task default: %i[spec rubocop audit dependency_audit documentation]

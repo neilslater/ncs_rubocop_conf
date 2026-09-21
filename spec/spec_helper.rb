@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative '../tasks/coverage'
+
 require 'fileutils'
 require 'json'
 require 'open3'
@@ -24,14 +26,14 @@ module FixtureHelpers
     with_project({ '.rubocop.yml' => { 'inherit_from' => inherited }.to_yaml }.merge(files), &)
   end
 
-  def rubocop_offenses(root, files, only:)
+  def rubocop_offenses(root, files, only: nil)
     stdout, stderr, status = run_rubocop(root, files, only)
     validate_rubocop_result(stdout, stderr, status)
 
     JSON.parse(stdout).fetch('files').flat_map { |file| file.fetch('offenses') }
   end
 
-  def rubocop_cop_names(root, files, only:)
+  def rubocop_cop_names(root, files, only: nil)
     rubocop_offenses(root, files, only:).map { |offense| offense.fetch('cop_name') }
   end
 
@@ -43,7 +45,9 @@ module FixtureHelpers
 
   def run_rubocop(root, files, only)
     command = [Gem.ruby, Gem.bin_path('rubocop', 'rubocop'), '--no-server', '--format', 'json',
-               '--cache', 'false', '--force-exclusion', '--only', only.join(','), *files]
+               '--cache', 'false', '--force-exclusion']
+    command.push('--only', only.join(',')) if only
+    command.concat(files)
     environment = { 'RUBOCOP_CACHE_ROOT' => root.join('.rubocop-cache').to_s }
     Open3.capture3(environment, *command, chdir: root.to_s)
   end

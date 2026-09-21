@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- Correct the native-profile description to its existing whole-cop exclusion
+  for `**/ext/**/extconf.rb`; document current audit inputs, limitations, and
+  public interfaces, and clarify tag versus consumer-lockfile guarantees.
+- Strengthen profile boundary and installed-package validation without changing
+  distributed policy. Enforce 95% line/branch coverage, dependency auditing,
+  public API documentation, and lockfile-selected Bundler in development/CI.
+
 ## 0.2.1 - 2026-09-20
 
 - Audit spaced `disable`/`todo` directives and negative `push` operands using

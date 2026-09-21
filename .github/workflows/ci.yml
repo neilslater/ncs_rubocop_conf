@@ -2,8 +2,6 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
   pull_request:
 
 permissions:
@@ -31,8 +29,12 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
-          bundler: latest
+          bundler: Gemfile.lock
           bundler-cache: true
 
-      - name: Run policy fixtures, lint, and exception audit
+      - name: Run coverage, policy fixtures, lint, audits, and documentation checks
         run: bundle exec rake
+
+      - name: Check installed package and consumer integration
+        if: matrix.ruby == '4.0'
+        run: bundle exec rake package_check
