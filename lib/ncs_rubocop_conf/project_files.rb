@@ -5,6 +5,7 @@ require 'pathname'
 
 module NcsRuboCopConf
   # Enumerates maintained repository files while pruning generated directories.
+  # @api private
   class ProjectFiles
     include Enumerable
 

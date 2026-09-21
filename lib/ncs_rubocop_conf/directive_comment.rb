@@ -5,6 +5,7 @@ require 'rubocop'
 
 module NcsRuboCopConf
   # Isolates the reviewed RuboCop private grammar API from exception policy.
+  # @api private
   class DirectiveComment
     Comment = Struct.new(:text)
 

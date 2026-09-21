@@ -2,6 +2,7 @@
 
 module NcsRuboCopConf
   # Checks exception-like settings in one RuboCop YAML configuration.
+  # @api private
   class ConfigAudit
     RATIONALE = /^\s*# RuboCop rationale: \S/
     SECTION = %r{^(?:AllCops|[A-Z][A-Za-z0-9]*/[A-Za-z0-9_]+):}

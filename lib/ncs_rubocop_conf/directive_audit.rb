@@ -4,6 +4,7 @@ require_relative 'directive_comment'
 
 module NcsRuboCopConf
   # Checks inline RuboCop control comments in one Ruby source file.
+  # @api private
   class DirectiveAudit
     RATIONALE = /^\s*# RuboCop rationale: \S/
     COP_NAME = %r{\A[A-Z][A-Za-z0-9_]*(?:/[A-Z][A-Za-z0-9_]*)+\z}
