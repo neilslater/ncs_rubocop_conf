@@ -2,8 +2,13 @@ name: CI
 
 on:
   push:
+    branches:
+      - main
+      - maintenance
   pull_request:
-
+  schedule:
+    - cron: '0 6 11 * *'
+  
 permissions:
   contents: read
 
