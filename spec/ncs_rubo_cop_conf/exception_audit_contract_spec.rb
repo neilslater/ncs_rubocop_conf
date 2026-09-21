@@ -61,7 +61,7 @@ RSpec.describe NcsRuboCopConf::ExceptionAudit do
   end
 
   def after_edit(root, audit, findings)
-    root.join('.rubocop.yml').write('--- {}')
+    root.join('.rubocop.yml').write("# No local settings\n")
     [audit.offenses.equal?(findings), described_class.new(root:).success?]
   end
 

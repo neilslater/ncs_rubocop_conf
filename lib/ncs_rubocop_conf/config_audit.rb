@@ -1,48 +1,52 @@
 # frozen_string_literal: true
 
+require_relative 'config_syntax'
+require_relative 'config_inheritance'
+require_relative 'config_shape'
+
 module NcsRuboCopConf
-  # Checks exception-like settings in one RuboCop YAML configuration.
+  # Checks supported RuboCop YAML and adjacent exception rationales.
   # @api private
   class ConfigAudit
     RATIONALE = /^\s*# RuboCop rationale: \S/
-    SECTION = %r{^(?:AllCops|[A-Z][A-Za-z0-9]*/[A-Za-z0-9_]+):}
-    TOP_LEVEL_KEY = %r{^[A-Za-z][A-Za-z0-9_/-]*:}
-    EXCEPTION_SETTING = /^\s{2}(?:Exclude|Max):|^\s{2}Enabled:\s*false(?:\s|$)/
 
     def initialize(path)
       @path = path
     end
 
     def offenses
-      lines = path.readlines
-      section_lines(lines).filter_map { |line_number| offense_for(lines, line_number) }
+      source = path.read
+      root = ConfigSyntax.new(source, path).parse
+      return [] unless root
+
+      ConfigShape.new(path).check(root)
+      exception_offenses(root, source.lines)
+    rescue ConfigSyntax::Unsupported => e
+      [PolicyOffense.new(path:, line: e.line, message: e.message)]
     end
 
     private
 
     attr_reader :path
 
-    def section_lines(lines)
-      lines.each_index.select { |index| lines[index].match?(SECTION) }
+    def exception_section?(key, value)
+      return false unless key.value == 'AllCops' || key.value.include?('/')
+
+      value.children.each_slice(2).any? { |setting, data| ConfigShape.exception?(setting, data) }
     end
 
-    def offense_for(lines, line_number)
-      block = lines[line_number...section_end(lines, line_number)]
-      return unless block.any? { |line| line.match?(EXCEPTION_SETTING) }
-      return if line_number.positive? && lines[line_number - 1].match?(RATIONALE)
-
-      PolicyOffense.new(
-        path:,
-        line: line_number + 1,
-        message: 'local RuboCop exception needs an immediately preceding rationale'
-      )
+    def rationale?(key, lines)
+      key.start_line.positive? && lines[key.start_line - 1].match?(RATIONALE)
     end
 
-    def section_end(lines, line_number)
-      next_line = ((line_number + 1)...lines.length).find do |index|
-        lines[index].match?(TOP_LEVEL_KEY)
+    def exception_offenses(root, lines)
+      root.children.each_slice(2).filter_map do |key, value|
+        next unless exception_section?(key, value)
+        next if rationale?(key, lines)
+
+        PolicyOffense.new(path:, line: key.start_line + 1,
+                          message: 'local RuboCop exception needs an immediately preceding rationale')
       end
-      next_line || lines.length
     end
   end
 end

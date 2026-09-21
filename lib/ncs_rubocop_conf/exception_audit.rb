@@ -72,8 +72,20 @@ module NcsRuboCopConf
       %w[.rubocop.yml .rubocop.yaml].include?(path.basename.to_s)
     end
 
+    def ruby_bin_script?(path)
+      return false unless path.relative_path_from(root).each_filename.first == 'bin'
+      return false unless path.file? && !path.symlink?
+
+      source = path.binread
+      return false if source.include?("\0")
+
+      %r{\A\#![ \t]*(?:/[^ \t\r\n]*/ruby|/[^ \t\r\n]*/env[ \t]+(?:-S[ \t]+)?ruby)(?:[ \t]|\r?$)}
+        .match?(source.lines.first.to_s)
+    end
+
     def ruby_source?(path)
-      %w[.rb .rake .gemspec].include?(path.extname) || %w[Gemfile Rakefile].include?(path.basename.to_s)
+      %w[.rb .rake .gemspec].include?(path.extname) || %w[Gemfile Rakefile].include?(path.basename.to_s) ||
+        ruby_bin_script?(path)
     end
   end
 end

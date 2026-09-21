@@ -4,7 +4,7 @@
 repositories. It is developed and tagged on GitHub, but is not published to
 RubyGems.
 
-Version 0.2.x supports Ruby 3.3 and later and constrains RuboCop/plugin updates
+Version 0.3.x supports Ruby 3.3 and later and constrains RuboCop/plugin updates
 to the reviewed 1.89.x, rubocop-rake 0.7.x, and rubocop-rspec 3.10.x lines.
 Changing any of those lines is a policy upgrade that must be reviewed against
 the effective configuration and profile fixtures before release.
@@ -23,12 +23,13 @@ the effective configuration and profile fixtures before release.
   for files matching `**/ext/**/extconf.rb`, including arbitrary globals in
   those files. Other checks still run there; globals elsewhere remain checked.
 
-Consumers should pin an immutable Git tag:
+Consumers should pin an immutable Git tag. The `v0.3.0` example below applies
+once that release tag is available:
 
 ```ruby
 gem 'ncs_rubocop_conf',
     github: 'neilslater/ncs_rubocop_conf',
-    tag: 'v0.2.1',
+    tag: 'v0.3.0',
     require: false
 ```
 
@@ -105,24 +106,42 @@ bundle exec ncs-rubocop-conf-audit --help
 
 The root defaults to the current directory. Clean audits print
 `RuboCop exception audit passed` and exit 0; policy findings print
-`path:line: message`, an offense count, and exit 1. Run RuboCop separately to
+`path:line: message`, a finding count, and exit 1. Unsupported configuration also
+exits 1, with a distinct `Configuration not supported yet by the exception
+audit` explanation; the existing summary still calls findings offenses. Run RuboCop separately to
 validate configuration and code. Operational and option errors currently may
 raise exceptions; success is not proof that all possible inputs were inspected.
 
 The audit recursively selects `.rubocop.yml` and `.rubocop.yaml`, and source
 files ending in `.rb`, `.rake`, or `.gemspec`, plus `Gemfile` and `Rakefile`.
-It rejects discovered `.rubocop_todo.yml` files. Directories named `.bundle`,
+It also selects regular Ruby scripts under the audited root's `bin/` directory,
+including nested extensionless scripts with a direct Ruby or `env ruby` /
+`env -S ruby` shebang. Shell scripts, other language launchers, binary files,
+and extensionless symlinks are not added by this rule. It rejects discovered `.rubocop_todo.yml` files. Directories named `.bundle`,
 `.git`, `coverage`, `pkg`, `tmp`, and `vendor` are pruned at every depth below
 the root. RuboCop's own exclusions do not control this scan.
 
-Current discovery does not follow configuration inheritance or recognize `.ru`
-files and extensionless Ruby executables. YAML checking recognizes unquoted
-`AllCops` or `Department/Cop` section headers and two-space-indented `Exclude`,
-`Max`, or literal `Enabled: false` settings. It is a textual check, not a YAML
-validator: alternative spellings, department/global switches, aliases, and
-invalid YAML can escape detection. Filesystem traversal also has limitations
-around symlinks and unreadable directories. These limitations require separate
-behaviour changes; they are not guarantees supplied by this release.
+The audit recognizes references to the four profiles in this gem without
+following configuration inheritance. Consumer `inherit_gem` references must name
+this gem and its known profile paths. Direct `inherit_from` references are
+recognized only when they resolve lexically to profiles in the running audit's
+own package or source checkout, preserving this repository's self-hosting and
+source-profile fixtures. A consumer-local file named `config/base.yml` is not
+one of those sources. Other inheritance is reported as unsupported without
+opening its target.
+
+A static YAML syntax check reports the first unsupported construct in each
+selected configuration and stops exception interpretation for that file. It
+never evaluates ERB, constructs YAML objects, loads custom Ruby or plugins, or
+resolves anchors and merges. Within supported mappings, `AllCops` and cop-level
+`Exclude`, `Max`, and literal `Enabled: false` settings require the preceding
+rationale. This is a deliberately limited check; RuboCop remains responsible for
+cop names, options, and effective configuration validation.
+
+`.ru` files, extensionless scripts outside `bin`, and ERB/generated Ruby are not
+newly discovered. Filesystem traversal still has limitations around symlinks
+and unreadable directories, and root/argument handling is unchanged. These
+limits are separate from the unsupported-configuration checks in 0.3.0.
 
 ### Configuration not supported yet by the exception audit
 
@@ -140,7 +159,7 @@ The following configuration features are **not supported yet by the audit**:
 
 - Quoted section or setting keys, flow mappings, alternative mapping indentation,
   and equivalent boolean spellings such as `Enabled: no`.
-- YAML anchors, aliases, `<<` merges, custom tags, complex keys, duplicate keys,
+- YAML anchors, aliases, `<<` merges, explicit YAML tags, complex keys, duplicate keys,
   multiple documents, and ERB or configuration-driven custom Ruby loading.
 - Whole-department exception settings and global default-disable switches such
   as `DisabledByDefault` and `EnabledByDefault`.
@@ -153,9 +172,18 @@ claims that the syntax is invalid in RuboCop. We will consider extending support
 when a consuming repository needs it. Approval of an exception and support for
 its configuration syntax are separate questions.
 
-The current checker does **not reliably report all these unsupported forms**;
-a successful audit does not certify their contents. Explicit detection is
-proposed, not implemented. Continue running RuboCop itself alongside the audit.
+Version 0.3.0 reports these unsupported forms with a source location where
+available, and fails the audit instead of silently accepting the configuration.
+Invalid YAML and unexpected document/section shapes also fail. A rationale
+comment cannot override an unsupported-form diagnostic. Use the documented
+subset or request support for a concrete need; the checker does not rewrite
+configuration or promise to detect every possible evasion. Continue running
+RuboCop itself alongside the audit.
+
+When upgrading from 0.2.x, run the audit against each consumer. Resolve newly
+reported `bin` directives through the usual refactoring/exception review, and
+simplify unsupported configuration or request the needed support. Commit the
+consumer's new immutable tag pin and resolved lockfile together.
 
 ### Ruby API
 

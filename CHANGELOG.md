@@ -1,6 +1,22 @@
 # Changelog
 
-## Unreleased
+## 0.3.0 - Unreleased
+
+- Audit regular Ruby scripts beneath the root `bin/` directory, including
+  extensionless Ruby launchers. Preserve existing file selection and skip
+  non-Ruby/binary launchers and extensionless symlinks.
+- Statically inspect selected RuboCop YAML and report unsupported syntax,
+  document/section shapes, global/department disabling, custom Ruby loading,
+  and inheritance outside this gem's known profiles. These findings fail the
+  audit with source locations; a rationale does not override them. No external
+  inheritance is followed and no ERB, YAML objects, or custom code is evaluated.
+- Preserve supported consumer syntax, optional plugins, source-profile
+  self-hosting, existing rationale checks, and explicit config-path semantics.
+  Unsupported means not supported yet, not permanently prohibited by policy.
+- Migration: after the release tag exists, pin `v0.3.0`, update the consumer
+  lockfile, and run the full consumer gate. Address newly found bin directives
+  and unsupported configurations before adopting; request extended support
+  only when needed. Shared profiles and runtime dependency lines are unchanged.
 
 - Correct the native-profile description to its existing whole-cop exclusion
   for `**/ext/**/extconf.rb`; document current audit inputs, limitations, and

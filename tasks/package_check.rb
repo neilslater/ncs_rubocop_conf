@@ -14,7 +14,9 @@ module PackageCheck
     CHANGELOG.md LICENSE README.md
     config/base.yml config/native_extension.yml config/rake.yml config/rspec.yml
     exe/ncs-rubocop-conf-audit lib/ncs_rubocop_conf.rb
-    lib/ncs_rubocop_conf/config_audit.rb lib/ncs_rubocop_conf/directive_audit.rb
+    lib/ncs_rubocop_conf/config_audit.rb lib/ncs_rubocop_conf/config_syntax.rb
+    lib/ncs_rubocop_conf/config_inheritance.rb lib/ncs_rubocop_conf/config_shape.rb
+    lib/ncs_rubocop_conf/directive_audit.rb
     lib/ncs_rubocop_conf/directive_comment.rb lib/ncs_rubocop_conf/exception_audit.rb
     lib/ncs_rubocop_conf/policy_offense.rb lib/ncs_rubocop_conf/project_files.rb
     lib/ncs_rubocop_conf/version.rb

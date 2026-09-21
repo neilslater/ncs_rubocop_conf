@@ -30,6 +30,20 @@ RSpec.describe NcsRuboCopConf do
     end
   end
 
+  it 'fails unsupported configuration with a distinct location and explanation' do
+    with_project('.rubocop.yml' => "'Style/GlobalVars':\n  Enabled: false\n") do |root|
+      expect(invoke(['--root', root.to_s]))
+        .to match [1, /\A\.rubocop.yml:1: Configuration not supported yet.*quoted.*\n1 exception audit offense\(s\)\n$/]
+    end
+  end
+
+  it 'reports a skipped-before-0.3 Ruby bin script through the CLI' do
+    with_project('bin/console' => "#!/usr/bin/env ruby\n# rubocop:todo all\n") do |root|
+      expect(invoke(['--root', root.to_s]))
+        .to eq [1, "bin/console:2: rubocop:todo directives are not permitted\n1 exception audit offense(s)\n"]
+    end
+  end
+
   it 'describes the root option in help' do
     expect(invoke(['--help'])).to match [0, /Usage: ncs-rubocop-conf-audit \[--root PATH\].*Repository root to audit/m]
   end
