@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.0 - Unreleased
+## 0.3.0 - 2026-09-21
 
 - Audit regular Ruby scripts beneath the root `bin/` directory, including
   extensionless Ruby launchers. Preserve existing file selection and skip
@@ -13,7 +13,7 @@
 - Preserve supported consumer syntax, optional plugins, source-profile
   self-hosting, existing rationale checks, and explicit config-path semantics.
   Unsupported means not supported yet, not permanently prohibited by policy.
-- Migration: after the release tag exists, pin `v0.3.0`, update the consumer
+- Migration: pin `v0.3.0`, update the consumer
   lockfile, and run the full consumer gate. Address newly found bin directives
   and unsupported configurations before adopting; request extended support
   only when needed. Shared profiles and runtime dependency lines are unchanged.

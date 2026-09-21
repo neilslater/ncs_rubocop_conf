@@ -23,8 +23,7 @@ the effective configuration and profile fixtures before release.
   for files matching `**/ext/**/extconf.rb`, including arbitrary globals in
   those files. Other checks still run there; globals elsewhere remain checked.
 
-Consumers should pin an immutable Git tag. The `v0.3.0` example below applies
-once that release tag is available:
+Consumers should pin an immutable Git tag:
 
 ```ruby
 gem 'ncs_rubocop_conf',
