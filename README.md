@@ -124,6 +124,39 @@ invalid YAML can escape detection. Filesystem traversal also has limitations
 around symlinks and unreadable directories. These limitations require separate
 behaviour changes; they are not guarantees supplied by this release.
 
+### Configuration not supported yet by the exception audit
+
+This tool assumes cooperative use: prefer fixing RuboCop findings by refactoring
+code, and obtain approval for justified exceptions. It is not a comprehensive
+interpreter of every RuboCop configuration form.
+
+The supported workflow uses this gem's profiles and straightforward YAML with
+unquoted mapping keys, two-space setting indentation, and literal `true`/`false`
+booleans. Quoted values such as glob strings, ordinary lists, `inherit_mode`
+list merging, and plugin declarations remain part of that workflow. This
+repository loads its own tracked profiles directly for development.
+
+The following configuration features are **not supported yet by the audit**:
+
+- Quoted section or setting keys, flow mappings, alternative mapping indentation,
+  and equivalent boolean spellings such as `Enabled: no`.
+- YAML anchors, aliases, `<<` merges, custom tags, complex keys, duplicate keys,
+  multiple documents, and ERB or configuration-driven custom Ruby loading.
+- Whole-department exception settings and global default-disable switches such
+  as `DisabledByDefault` and `EnabledByDefault`.
+- Inheritance from sources other than this gem's known profiles, including
+  custom local files, URLs, globs, and other gems. The audit does not follow or
+  validate those sources; known profiles are the four listed above.
+
+These are current implementation limits, not permanent policy prohibitions or
+claims that the syntax is invalid in RuboCop. We will consider extending support
+when a consuming repository needs it. Approval of an exception and support for
+its configuration syntax are separate questions.
+
+The current checker does **not reliably report all these unsupported forms**;
+a successful audit does not certify their contents. Explicit detection is
+proposed, not implemented. Continue running RuboCop itself alongside the audit.
+
 ### Ruby API
 
 Require `ncs_rubocop_conf`. The supported Ruby entry point is
